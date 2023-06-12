@@ -1,7 +1,9 @@
 const redux = require('redux');
 const createStore = redux.createStore;
+const combineReducers = redux.combineReducers;
 
 const BUY_CAKE = 'BUY_CAKE';
+const BUY_ICE_CREAMS = 'BUY_ICE_CREAMS';
 
 // region action creator
 
@@ -12,15 +14,30 @@ function buyCake() {
     }
 }
 
+function buyIceCreams() {
+    return {
+        type: BUY_ICE_CREAMS,
+    }
+}
+
 // endregion
 
 // region Reducer
 
 const initialState = {
+    numOfCakes: 10,
+    numOfIceCreams: 20
+}
+
+const initialCakeState = {
     numOfCakes: 10
 }
 
-const reducer = (state = initialState, action) => {
+const initialIceCreamState = {
+    numOfIceCreams: 20
+}
+
+const cakeReducer = (state = initialCakeState, action) => {
     switch (action.type) {
         case BUY_CAKE:
             return {
@@ -33,13 +50,36 @@ const reducer = (state = initialState, action) => {
     }
 }
 
+const iceCreamReducer = (state = initialIceCreamState, action) => {
+    switch (action.type) {
+        case BUY_ICE_CREAMS:
+            return {
+                ...state, // Copy of the state object
+                numOfIceCreams: state.numOfIceCreams - 1
+            }
+
+        default:
+            return state
+    }
+}
+
 //endregion
 
-const store = createStore(reducer); // Holds application state
+const rootReducer = combineReducers({
+    cake: cakeReducer,
+    iceCream: iceCreamReducer
+})
+
+const store = createStore(rootReducer); // Holds application state
+
+
 console.log('Initial state', store.getState()); // Get initial state
 const unsubscribe = store.subscribe(() => console.log('Updated state', store.getState())); // Listen to state changes
 store.dispatch(buyCake()); // Dispatch action
 store.dispatch(buyCake()); // Dispatch action
 store.dispatch(buyCake()); // Dispatch action
+
+store.dispatch(buyIceCreams()); // Dispatch action
+store.dispatch(buyIceCreams()); // Dispatch action
 
 unsubscribe(); // Unsubscribe from state changes
